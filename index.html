@@ -24,9 +24,8 @@
     </div>
 
     <script>
-        function updatePeriod() {
+       function updatePeriod() {
     let now = new Date();
-    // မြန်မာစံတော်ချိန် GMT+6:30 သို့ ပြောင်းလဲခြင်း
     let utc = now.getTime() + (now.getTimezoneOffset() * 60000);
     let mmTime = new Date(utc + (3600000 * 6.5));
 
@@ -34,30 +33,19 @@
     let month = String(mmTime.getMonth() + 1).padStart(2, '0');
     let day = String(mmTime.getDate()).padStart(2, '0');
 
-    let hours = mmTime.getHours();
-    let minutes = mmTime.getMinutes();
-    let seconds = mmTime.getSeconds();
-    
-    // တစ်ရက်အတွင်း ကုန်ဆုံးသွားသော စက္ကန့်စုစုပေါင်း
-    let totalSeconds = (hours * 3600) + (minutes * 60) + seconds;
-    
-    // ဂိမ်းဆိုဒ် (Win Go 30s) နှင့် အတိအကျတူရန် ညှိထားသော တွက်ချက်မှု
+    let totalSeconds = (mmTime.getHours() * 3600) + (mmTime.getMinutes() * 60) + mmTime.getSeconds();
     let currentPeriod = Math.floor(totalSeconds / 30) + 4958; 
 
-    // ဂဏန်း ၅ လုံး ပုံစံဖော်ခြင်း
     let periodString = `${year}${month}${day}1000${String(currentPeriod).padStart(5, '0')}`;
     
-    // HTML ထဲမှာ ပြသရန် (ID အားလုံးနှင့် ကိုက်အောင် ညှိထားပါသည်)
-    let display = document.getElementById('periodDisplay') || 
-                  document.getElementById('period1') || 
-                  document.querySelector('.period-class') ||
-                  document.querySelector('div[style*="color: rgb(255, 193, 7)"]');
-
-    if (display) {
-        display.innerText = periodString;
+    // ပုံ ၁၁၅ အရ အဝါရောင်စာသားနေရာကို အတင်းအကျပ် ပြောင်းလဲခြင်း
+    let allDivs = document.getElementsByTagName('div');
+    for(let i=0; i<allDivs.length; i++) {
+        if(allDivs[i].innerText === "Loading..." || allDivs[i].innerText.includes("2026")) {
+            allDivs[i].innerText = periodString;
+        }
     }
 }
-
-// ၁ စက္ကန့်တိုင်း တစ်ခါ Update လုပ်ရန်
 setInterval(updatePeriod, 1000);
 updatePeriod();
+ 
