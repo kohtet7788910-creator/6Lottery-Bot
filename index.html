@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>6Lottery Prediction Sync</title>
+    <style>
+        body { background: #000; color: #fff; text-align: center; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { width: 340px; border: 2px solid #ff0000; border-radius: 20px; padding: 20px; background: #111; box-shadow: 0 0 20px #ff000044; }
+        .period-box { background: #1a1a1a; padding: 10px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #333; }
+        .period-id { color: #ffd700; font-size: 18px; font-weight: bold; }
+        .result { font-size: 70px; font-weight: 900; color: #ff0000; margin: 20px 0; text-shadow: 0 0 15px #ff0000; }
+        .timer { background: #ff0000; padding: 5px 20px; border-radius: 20px; font-size: 20px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="period-box">
+            <div style="font-size: 12px; color: #888;">PERIOD (30S)</div>
+            <div id="p-id" class="period-id">Loading...</div>
+        </div>
+        <div id="res" class="result">WAIT</div>
+        <div id="time" class="timer">00:30</div>
+    </div>
+
+    <script>
+        function update() {
+            const now = new Date();
+            const sec = now.getSeconds();
+            const totalSec = (now.getHours() * 3600) + (now.getMinutes() * 60) + sec;
+            const pIndex = Math.floor(totalSec / 30);
+            const timeLeft = 30 - (sec % 30);
+
+            const d = now.getFullYear().toString() + (now.getMonth()+1).toString().padStart(2,'0') + now.getDate().toString().padStart(2,'0');
+            
+            // Period နံပါတ်ကို ဂိမ်းထဲက 51715 နဲ့ကိုက်အောင် ညှိထားပါတယ်
+            const base = 44265; 
+            document.getElementById('p-id').innerText = d + "1000" + (base + pIndex);
+            document.getElementById('time').innerText = "00:" + timeLeft.toString().padStart(2,'0');
+            
+            if(timeLeft <= 3) {
+                document.getElementById('res').innerText = "WAIT";
+            } else {
+                const isBig = (pIndex % 2 == 0);
+                document.getElementById('res').innerText = isBig ? "BIG" : "SMALL";
+                document.getElementById('res').style.color = isBig ? "#ff0000" : "#0088ff";
+            }
+        }
+        setInterval(update, 1000);
+        update();
+    </script>
+</body>
+</html>
