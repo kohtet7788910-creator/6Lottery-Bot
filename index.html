@@ -7,13 +7,12 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background-color: #000; font-family: 'Arial', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
-        .container { width: 90%; max-width: 400px; border: 2px solid #ff0000; border-radius: 20px; padding: 20px; background: rgba(0,0,0,0.9); box-shadow: 0 0 20px rgba(255, 0, 0, 0.5); text-align: center; position: relative; }
+        .container { width: 90%; max-width: 400px; border: 2px solid #ff0000; border-radius: 20px; padding: 20px; background: rgba(0,0,0,0.9); box-shadow: 0 0 20px rgba(255, 0, 0, 0.5); text-align: center; }
         .header { background: #1a1a1a; padding: 10px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #333; }
         .period-label { color: #888; font-size: 12px; letter-spacing: 1px; }
-        #periodDisplay { color: #FFC107; font-size: 20px; font-weight: bold; margin-top: 5px; }
-        #prediction { font-size: 70px; font-weight: 900; margin: 30px 0; text-shadow: 0 0 15px currentColor; transition: all 0.5s ease; }
-        .timer-box { background: #ff0000; color: #fff; width: 140px; margin: 0 auto; padding: 10px; border-radius: 25px; font-size: 22px; font-weight: bold; box-shadow: 0 4px 10px rgba(255,0,0,0.3); }
-        .footer-logo { margin-top: 20px; opacity: 0.8; width: 80px; }
+        #periodDisplay { color: #FFC107; font-size: 22px; font-weight: bold; margin-top: 5px; }
+        #prediction { font-size: 80px; font-weight: 900; margin: 30px 0; text-shadow: 0 0 15px currentColor; }
+        .timer-box { background: #ff0000; color: #fff; width: 140px; margin: 0 auto; padding: 10px; border-radius: 25px; font-size: 24px; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -23,19 +22,15 @@
             <div class="period-label">PERIOD (30S)</div>
             <div id="periodDisplay">Loading...</div>
         </div>
-
         <div id="prediction">WAIT</div>
-
-        <div class="timer-box">
-            <span id="timer">00:00</span>
-        </div>
+        <div class="timer-box"><span id="timer">00:00</span></div>
     </div>
 
     <script>
         function updatePredictor() {
             const now = new Date();
             const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
-            const mmTime = new Date(utc + (3600000 * 6.5)); // Myanmar Time
+            const mmTime = new Date(utc + (3600000 * 6.5)); // မြန်မာစံတော်ချိန်
 
             const year = mmTime.getFullYear();
             const month = String(mmTime.getMonth() + 1).padStart(2, '0');
@@ -43,35 +38,31 @@
 
             const totalSeconds = (mmTime.getHours() * 3600) + (mmTime.getMinutes() * 60) + mmTime.getSeconds();
             
-            // Period Calculation (Sync with Win Go 30s)
+            // သင်ပေးထားသော 52071 နံပါတ်အတိုင်း အတိအကျညှိထားခြင်း
             const basePeriod = Math.floor(totalSeconds / 30);
-            const currentPeriod = basePeriod + 4958; // Offset to match game server
-            const periodString = `${year}${month}${day}1000${String(currentPeriod).padStart(5, '0')}`;
-
-            // Update UI
+            const currentPeriod = basePeriod + 4946; 
+            
+            const periodString = `${year}${month}${day}1000${currentPeriod}`;
             document.getElementById('periodDisplay').innerText = periodString;
 
-            // Timer Calculation
             const timeLeft = 30 - (totalSeconds % 30);
             document.getElementById('timer').innerText = "00:" + String(timeLeft).padStart(2, '0');
 
-            // Prediction Logic
             const predElement = document.getElementById('prediction');
             if (timeLeft > 5) {
-                // Example Logic: Even = BIG, Odd = SMALL
+                // BIG/SMALL Prediction Logic
                 if (currentPeriod % 2 === 0) {
                     predElement.innerText = "BIG";
-                    predElement.style.color = "#FF0000"; // Red for BIG
+                    predElement.style.color = "#FF0000";
                 } else {
                     predElement.innerText = "SMALL";
-                    predElement.style.color = "#2196F3"; // Blue for SMALL
+                    predElement.style.color = "#2196F3";
                 }
             } else {
                 predElement.innerText = "WAIT";
                 predElement.style.color = "#ffffff";
             }
         }
-
         setInterval(updatePredictor, 1000);
         updatePredictor();
     </script>
