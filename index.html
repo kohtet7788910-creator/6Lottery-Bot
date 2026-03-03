@@ -24,30 +24,36 @@
     </div>
 
     <script>
-        function update() {
-            const now = new Date();
-            const sec = now.getSeconds();
-            const totalSec = (now.getHours() * 3600) + (now.getMinutes() * 60) + sec;
-            const pIndex = Math.floor(totalSec / 30);
-            const timeLeft = 30 - (sec % 30);
+        function updatePeriod() {
+    let now = new Date();
+    // မြန်မာစံတော်ချိန် (GMT +6:30) ညှိခြင်း
+    let utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+    let mmTime = new Date(utc + (3600000 * 6.5));
 
-            const d = now.getFullYear().toString() + (now.getMonth()+1).toString().padStart(2,'0') + now.getDate().toString().padStart(2,'0');
+    let year = mmTime.getFullYear();
+    let month = String(mmTime.getMonth() + 1).padStart(2, '0');
+    let day = String(mmTime.getDate()).padStart(2, '0');
+
+    // တစ်ရက်အတွင်း ကုန်ဆုံးသွားသော စက္ကန့်စုစုပေါင်း
+    let hours = mmTime.getHours();
+    let minutes = mmTime.getMinutes();
+    let seconds = mmTime.getSeconds();
+    let totalSecondsPassed = (hours * 3600) + (minutes * 60) + seconds;
+
+    // 30s Win Go အတွက် Period တွက်နည်း (စက္ကန့် ၃၀ တိုင်း ၁ ကြိမ်)
+    let currentPeriod = Math.floor(totalSecondsPassed / 30) + 1;
+    
+    // ဂိမ်းဆိုဒ်က နံပါတ်နဲ့ ကိုက်ညီအောင် ညှိခြင်း (1000 နောက်က ဂဏန်း ၅ လုံး)
+    let periodString = `${year}${month}${day}1000${String(currentPeriod).padStart(5, '0')}`;
+    
+    // ပုံ ၁၁၅ အရ အဝါရောင် စာသားနေရာမှာ ပြောင်းလဲပေးရန်
+    let display = document.querySelector('div[style*="color: rgb(255, 193, 7)"]') || document.getElementById('periodDisplay');
+    if (display) {
+        display.innerText = periodString;
+    }
+}
+// ၁ စက္ကန့်တိုင်း အလိုအလျောက် Update လုပ်ရန်
+setInterval(updatePeriod, 1000);
+updatePeriod();
+
             
-            // Period နံပါတ်ကို ဂိမ်းထဲက 51715 နဲ့ကိုက်အောင် ညှိထားပါတယ်
-            const base = 44265; 
-            document.getElementById('p-id').innerText = d + "1000" + (base + pIndex);
-            document.getElementById('time').innerText = "00:" + timeLeft.toString().padStart(2,'0');
-            
-            if(timeLeft <= 3) {
-                document.getElementById('res').innerText = "WAIT";
-            } else {
-                const isBig = (pIndex % 2 == 0);
-                document.getElementById('res').innerText = isBig ? "BIG" : "SMALL";
-                document.getElementById('res').style.color = isBig ? "#ff0000" : "#0088ff";
-            }
-        }
-        setInterval(update, 1000);
-        update();
-    </script>
-</body>
-</html>
