@@ -24,28 +24,32 @@
     </div>
 
     <script>
-       function updatePeriod() {
-    let now = new Date();
-    let utc = now.getTime() + (now.getTimezoneOffset() * 60000);
-    let mmTime = new Date(utc + (3600000 * 6.5));
+       function startPredictor() {
+    function update() {
+        let now = new Date();
+        let utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+        let mmTime = new Date(utc + (3600000 * 6.5)); // မြန်မာစံတော်ချိန်
 
-    let year = mmTime.getFullYear();
-    let month = String(mmTime.getMonth() + 1).padStart(2, '0');
-    let day = String(mmTime.getDate()).padStart(2, '0');
+        let year = mmTime.getFullYear();
+        let month = String(mmTime.getMonth() + 1).padStart(2, '0');
+        let day = String(mmTime.getDate()).padStart(2, '0');
 
-    let totalSeconds = (mmTime.getHours() * 3600) + (mmTime.getMinutes() * 60) + mmTime.getSeconds();
-    let currentPeriod = Math.floor(totalSeconds / 30) + 4958; 
+        let totalSecs = (mmTime.getHours() * 3600) + (mmTime.getMinutes() * 60) + mmTime.getSeconds();
+        // ပုံ ၁၁၉ အရ Win Go 30s နံပါတ်အတိအကျဖြစ်အောင် ညှိထားသည်
+        let currentPeriod = Math.floor(totalSecs / 30) + 4958; 
+        let periodString = `${year}${month}${day}1000${String(currentPeriod).padStart(5, '0')}`;
 
-    let periodString = `${year}${month}${day}1000${String(currentPeriod).padStart(5, '0')}`;
-    
-    // ပုံ ၁၁၅ အရ အဝါရောင်စာသားနေရာကို အတင်းအကျပ် ပြောင်းလဲခြင်း
-    let allDivs = document.getElementsByTagName('div');
-    for(let i=0; i<allDivs.length; i++) {
-        if(allDivs[i].innerText === "Loading..." || allDivs[i].innerText.includes("2026")) {
-            allDivs[i].innerText = periodString;
+        // "Loading..." ဖြစ်နေတဲ့နေရာကို အတင်းအကျပ် ရှာဖွေပြီး ပြောင်းလဲခြင်း
+        let divs = document.getElementsByTagName('div');
+        for (let div of divs) {
+            if (div.innerText.includes("Loading") || div.innerText.includes("2026")) {
+                div.innerText = periodString;
+                div.style.color = "#FFC107"; // အဝါရောင်ပြောင်းခြင်း
+            }
         }
     }
+    setInterval(update, 1000);
+    update();
 }
-setInterval(updatePeriod, 1000);
-updatePeriod();
- 
+// App စတာနဲ့ ချက်ချင်းအလုပ်လုပ်ရန်
+window.onload = startPredictor;
